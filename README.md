@@ -1,5 +1,5 @@
 
-# [polychromatic](#polychromatic)
+# [polychromatic-rs](#polychromatic-rs)
 
 Generate [polychromatic](https://polychromatic.app/) effects with code!
 
