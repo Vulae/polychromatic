@@ -13,13 +13,13 @@ impl ToString for Device {
 }
 
 impl Device {
-    pub fn icon(&self) -> &str {
+    pub(crate) fn icon(&self) -> &str {
         match self {
             Device::Keyboard(_) => "keyboard",
         }
     }
 
-    pub fn matrix(&self) -> Option<(u32, u32)> {
+    pub(crate) fn matrix(&self) -> Option<(u32, u32)> {
         match self {
             Device::Keyboard(keyboard) => keyboard.matrix(),
         }
@@ -161,7 +161,7 @@ impl ToString for Keyboard {
 }
 
 impl Keyboard {
-    pub fn matrix(&self) -> Option<(u32, u32)> {
+    pub(crate) fn matrix(&self) -> Option<(u32, u32)> {
         match self {
             Self::RazerBlackWidowUltimate2012 => None,
             Self::RazerBlackWidowStealthEdition => None,

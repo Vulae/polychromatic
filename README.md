@@ -3,7 +3,7 @@
 
 Generate [polychromatic](https://polychromatic.app/) effects with code!
 
-# [Examples](#examples)
+# [Example](#example)
 
 ```Rust
 use polychromatic::{Color, Device, Effect, Keyboard, PolychromaticError};
@@ -40,6 +40,8 @@ pub fn polychromatic_effect_rainbow(output: std::path::PathBuf, icon: std::path:
 
 > [!TIP]
 > Run the above example:
+> 
 > `cargo run --example rainbow -- --output "./effects/Rainbow.json" --icon "./effects/pride.png"`
+> 
 > Move the output file to `~/.config/polychromatic/effects/` to be able to use the effect in the polychromatic app.
 
