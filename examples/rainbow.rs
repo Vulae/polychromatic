@@ -18,7 +18,7 @@ const FRAMES: u32 = 60;
 pub fn main() -> Result<(), Box<dyn Error>> {
     let cli = Cli::parse();
 
-    let mut effect = Effect::new(Device::Keyboard(Keyboard::RazerOrnataChroma), &cli.icon)?;
+    let mut effect = Effect::new(Device::Keyboard(Keyboard::detect_one()?), &cli.icon)?;
 
     effect.name = cli.output.file_stem().unwrap().to_str().unwrap().to_owned();
     effect.summary = "Rainbow!!!!".to_owned();
@@ -32,8 +32,9 @@ pub fn main() -> Result<(), Box<dyn Error>> {
         hue_rot += 360.0 / (FRAMES as f32);
 
         let frame = effect.new_frame();
-        frame.iter_mut().for_each(|(x, _y, color)| {
+        frame.iter_mut().for_each(|(x, y, color)| {
             let hue = x as f32 / width as f32;
+            let hue = if y % 2 == 0 { hue } else { -hue };
             *color = Color::from_hsl(hue * 360.0 + hue_rot, 1.0, 0.5);
         });
     }

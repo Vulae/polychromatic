@@ -1,3 +1,8 @@
+use strum::IntoEnumIterator;
+use strum_macros::EnumIter;
+
+use crate::{PolychromaticError, proc_bus_input_devices::query_input_devices};
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Device {
     Keyboard(Keyboard),
@@ -26,7 +31,7 @@ impl Device {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, EnumIter)]
 pub enum Keyboard {
     RazerBlackWidowUltimate2012,
     RazerBlackWidowStealthEdition,
@@ -161,6 +166,92 @@ impl ToString for Keyboard {
 }
 
 impl Keyboard {
+    /// Automatically detect Razer keyboards
+    pub fn detect() -> Result<Box<[Self]>, PolychromaticError> {
+        Ok(query_input_devices()?
+            .into_iter()
+            .flat_map(|device| {
+                if !device.name.contains("Razer") {
+                    return None;
+                }
+                Some(Keyboard::iter().filter(move |kb| {
+                    kb.device_id().iter().any(|(kb_id_vendor, kb_id_product)| {
+                        device.id.vendor == *kb_id_vendor && device.id.product == *kb_id_product
+                    })
+                }))
+            })
+            .flatten()
+            .collect())
+    }
+
+    /// Returns the first detected Razer keyboard
+    pub fn detect_one() -> Result<Self, PolychromaticError> {
+        Self::detect()?
+            .into_iter()
+            .next()
+            .ok_or(PolychromaticError::NoRazerDevice)
+    }
+
+    pub(crate) fn device_id(&self) -> &[(u16, u16)] {
+        match self {
+            Self::RazerBlackWidowUltimate2012 => &[(0x1532, 0x010D)],
+            Self::RazerBlackWidowStealthEdition => &[(0x1532, 0x010E)],
+            Self::RazerAnansi => &[(0x1532, 0x010F)],
+            Self::RazerDeathstalkerEssential => &[(0x1532, 0x0118)],
+            Self::RazerBlackWidowUltimate2013 => &[(0x1532, 0x011A)],
+            Self::RazerBlackWidowStealth => &[(0x1532, 0x011B)],
+            Self::RazerBlackWidowTournamentEdition2014 => &[(0x1532, 0x011C)],
+            Self::RazerDeathstalkerExpert => &[(0x1532, 0x0202)],
+            Self::RazerBlackWidowChroma => &[(0x1532, 0x0203)],
+            Self::RazerDeathStalkerChroma => &[(0x1532, 0x0204)],
+            Self::RazerBlackWidowChromaTournamentEdition => &[(0x1532, 0x0209)],
+            Self::RazerBlackWidowChromaOverwatch => &[(0x1532, 0x0211)],
+            Self::RazerBlackWidowUltimate2016 => &[(0x1532, 0x0214)],
+            Self::RazerBlackWidowXChroma => &[(0x1532, 0x0216)],
+            Self::RazerBlackWidowXUltimate => &[(0x1532, 0x0217)],
+            Self::RazerBlackWidowXChromaTournamentEdition => &[(0x1532, 0x021A)],
+            Self::RazerOrnataChroma => &[(0x1532, 0x021E)],
+            Self::RazerOrnata => &[(0x1532, 0x021F)],
+            Self::RazerBlackWidowChromaV2 => &[(0x1532, 0x0221)],
+            Self::RazerHuntsmanElite => &[(0x1532, 0x0226)],
+            Self::RazerHuntsman => &[(0x1532, 0x0227)],
+            Self::RazerBlackWidowElite => &[(0x1532, 0x0228)],
+            Self::RazerCynosaChroma => &[(0x1532, 0x022A)],
+            Self::RazerCynosaChromaPro => &[(0x1532, 0x022C)],
+            Self::RazerBlackWidowLite => &[(0x1532, 0x0235)],
+            Self::RazerBlackWidowEssential => &[(0x1532, 0x0237)],
+            Self::RazerCynosaLite => &[(0x1532, 0x023F)],
+            Self::RazerBlackWidow2019 => &[(0x1532, 0x0241)],
+            Self::RazerHuntsmanTournamentEdition => &[(0x1532, 0x0243)],
+            Self::RazerBlackWidowV3 => &[(0x1532, 0x024E)],
+            Self::RazerHuntsmanMini => &[(0x1532, 0x0257)],
+            Self::RazerBlackWidowV3MiniHyperspeedWired => &[(0x1532, 0x0258)],
+            Self::RazerBlackWidowV3ProWired => &[(0x1532, 0x025A)],
+            Self::RazerBlackWidowV3ProWireless => &[(0x1532, 0x025C)],
+            Self::RazerOrnataV2 => &[(0x1532, 0x025D)],
+            Self::RazerCynosaV2 => &[(0x1532, 0x025E)],
+            Self::RazerHuntsmanV2Analog => &[(0x1532, 0x0266)],
+            Self::RazerHuntsmanMiniJP => &[(0x1532, 0x0269)],
+            Self::RazerBook13_2020 => &[(0x1532, 0x026A)],
+            Self::RazerHuntsmanV2Tenkeyless => &[(0x1532, 0x026B)],
+            Self::RazerHuntsmanV2 => &[(0x1532, 0x026C)],
+            Self::RazerBlackWidowV3MiniHyperspeedWireless => &[(0x1532, 0x0271)],
+            Self::RazerHuntsmanMiniAnalog => &[(0x1532, 0x0282)],
+            Self::RazerBlackWidowV4 => &[(0x1532, 0x0287)],
+            Self::RazerBlackWidowV4Pro => &[(0x1532, 0x028D)],
+            Self::RazerDeathStalkerV2ProWireless => &[(0x1532, 0x0290)],
+            Self::RazerDeathStalkerV2ProWired => &[(0x1532, 0x0292)],
+            Self::RazerBlackWidowV4X => &[(0x1532, 0x0293)],
+            Self::RazerDeathStalkerV2 => &[(0x1532, 0x0295)],
+            Self::RazerDeathStalkerV2ProTKLWireless => &[(0x1532, 0x0296)],
+            Self::RazerDeathStalkerV2ProTKLWired => &[(0x1532, 0x0298)],
+            Self::RazerOrnataV3 => &[(0x1532, 0x02A1)],
+            Self::RazerOrnataV3X => &[(0x1532, 0x02A2), (0x1532, 0x0294)],
+            Self::RazerOrnataV3Tenkeyless => &[(0x1532, 0x02A3)],
+            Self::RazerBlackWidowV3Tenkeyless => &[(0x1532, 0x0A24)],
+        }
+    }
+
     pub(crate) fn matrix(&self) -> Option<(u32, u32)> {
         match self {
             Self::RazerBlackWidowUltimate2012 => None,

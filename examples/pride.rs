@@ -70,7 +70,7 @@ fn get_color(percent: f32) -> Color {
 pub fn main() -> Result<(), Box<dyn Error>> {
     let cli = Cli::parse();
 
-    let mut effect = Effect::new(Device::Keyboard(Keyboard::RazerOrnataChroma), &cli.icon)?;
+    let mut effect = Effect::new(Device::Keyboard(Keyboard::detect_one()?), &cli.icon)?;
 
     effect.name = cli.output.file_stem().unwrap().to_str().unwrap().to_owned();
 

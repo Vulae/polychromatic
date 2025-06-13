@@ -11,8 +11,8 @@ impl Color {
         Self { r, g, b }
     }
 
-    pub const fn from_hsl(h: f32, s: f32, l: f32) -> Self {
-        let h = h % 360.0;
+    pub fn from_hsl(h: f32, s: f32, l: f32) -> Self {
+        let h = h.rem_euclid(360.0);
         let s = f32::clamp(s, 0.0, 1.0);
         let l = f32::clamp(l, 0.0, 1.0);
 

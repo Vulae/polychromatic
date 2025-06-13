@@ -12,7 +12,7 @@ const FPS: u32 = 30;
 const FRAMES: u32 = 60;
 
 pub fn polychromatic_effect_rainbow(output: std::path::PathBuf, icon: std::path::PathBuf) -> Result<(), PolychromaticError> {
-    let mut effect = Effect::new(Device::Keyboard(Keyboard::RazerOrnataChroma), &icon)?;
+    let mut effect = Effect::new(Device::Keyboard(Keyboard::detect_one()?), &icon)?;
 
     effect.name = output.file_stem().unwrap().to_str().unwrap().to_owned();
     effect.summary = "Rainbow!!!!".to_owned();
@@ -28,6 +28,7 @@ pub fn polychromatic_effect_rainbow(output: std::path::PathBuf, icon: std::path:
         let frame = effect.new_frame();
         frame.iter_mut().for_each(|(x, _y, color)| {
             let hue = (x as f32 / width as f32) * 360.0;
+            let hue = if y % 2 == 0 { hue } else { -hue };
             *color = Color::from_hsl(hue + hue_rot, 1.0, 0.5);
         });
     }
